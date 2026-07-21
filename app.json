@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "RUMA",
+    "slug": "ruma-mobile",
+    "scheme": "ruma",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.ruma.mobile"
+    },
+    "android": {
+      "package": "com.ruma.mobile",
+      "adaptiveIcon": { "foregroundImage": "./assets/icon.png", "backgroundColor": "#A8632F" }
+    }
+  }
+}
