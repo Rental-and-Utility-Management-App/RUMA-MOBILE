@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { theme, text, space } from '../theme/tokens';
 
-export function LoadingState({ label = 'Loading…' }: { label?: string }) {
+export function LoadingState({ label = 'Đang tải…' }: { label?: string }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3] }}>
       <ActivityIndicator color={theme.brandPrimary} />
@@ -25,7 +25,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], padding: space[7] }}>
       <Text style={[text.bodyM, { color: theme.danger, textAlign: 'center' }]}>{message}</Text>
       {onRetry ? (
-        <Text onPress={onRetry} style={[text.labelM, { color: theme.brandPrimary }]}>Try again</Text>
+        <Text onPress={onRetry} style={[text.labelM, { color: theme.brandPrimary }]}>Thử lại</Text>
       ) : null}
     </View>
   );

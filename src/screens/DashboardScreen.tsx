@@ -9,6 +9,7 @@ import * as reportsApi from '../api/reports';
 import * as roomsApi from '../api/rooms';
 import { ReportSummary, Room } from '../api/types';
 import { formatVND } from '../utils/format';
+import { paymentStatusLabel } from '../utils/i18n';
 
 export default function DashboardScreen() {
   const { user } = useAuth();
@@ -31,7 +32,7 @@ export default function DashboardScreen() {
 
   async function onRefresh() { setRefreshing(true); await load(); setRefreshing(false); }
 
-  if (loading) return <LoadingState label="Loading dashboard…" />;
+  if (loading) return <LoadingState label="Đang tải…" />;
   if (error) return <ErrorState message={error} onRetry={load} />;
 
   return (
@@ -41,36 +42,36 @@ export default function DashboardScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.brandPrimary} />}
     >
       <View style={{ gap: 2 }}>
-        <Text style={[text.bodyM, { color: theme.fg2 }]}>Welcome back,</Text>
+        <Text style={[text.bodyM, { color: theme.fg2 }]}>Chào mừng trở lại,</Text>
         <Text style={[text.displayM, { color: theme.fg1 }]}>{user?.full_name}</Text>
       </View>
 
       {isManager ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space[3] }}>
-          <StatCard label="Occupied rooms" value={String(summary?.occupied_rooms ?? '—')} />
-          <StatCard label="Available rooms" value={String(summary?.available_rooms ?? '—')} />
-          <StatCard label="Revenue this month" value={formatVND(summary?.monthly_revenue as number)} wide />
-          <StatCard label="Outstanding" value={formatVND(summary?.outstanding_amount as number)} wide tone="danger" />
+          <StatCard label="Phòng đang thuê" value={String(summary?.occupied_rooms ?? '—')} />
+          <StatCard label="Phòng còn trống" value={String(summary?.available_rooms ?? '—')} />
+          <StatCard label="Doanh thu tháng này" value={formatVND(summary?.monthly_revenue as number)} wide />
+          <StatCard label="Công nợ" value={formatVND(summary?.outstanding_amount as number)} wide tone="danger" />
         </View>
       ) : room ? (
         <MobileCard style={{ gap: space[3] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View>
-              <Text style={[text.labelS, { color: theme.fg3 }]}>YOUR ROOM</Text>
+              <Text style={[text.labelS, { color: theme.fg3 }]}>PHÒNG CỦA BẠN</Text>
               <Text style={[text.displayS, { color: theme.fg1 }]}>{room.code}{room.name ? ` · ${room.name}` : ''}</Text>
             </View>
             {room.current_month_payment ? (
-              <Badge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
+              <Badge label={paymentStatusLabel(room.current_month_payment.status)} tone={roomPaymentTone(room.current_month_payment.status)} />
             ) : null}
           </View>
-          <Row label="Monthly rent" value={formatVND(room.monthly_rent)} />
-          <Row label="Occupants" value={`${room.occupants} / ${room.capacity || '∞'}`} />
+          <Row label="Tiền thuê hàng tháng" value={formatVND(room.monthly_rent)} />
+          <Row label="Số người ở" value={`${room.occupants} / ${room.capacity || '∞'}`} />
           {room.current_month_payment?.total_amount ? (
-            <Row label="This month's bill" value={formatVND(room.current_month_payment.total_amount)} />
+            <Row label="Hóa đơn tháng này" value={formatVND(room.current_month_payment.total_amount)} />
           ) : null}
         </MobileCard>
       ) : (
-        <MobileCard><Text style={[text.bodyM, { color: theme.fg2 }]}>No room assigned yet.</Text></MobileCard>
+        <MobileCard><Text style={[text.bodyM, { color: theme.fg2 }]}>Bạn chưa được xếp phòng.</Text></MobileCard>
       )}
     </ScrollView>
   );

@@ -17,7 +17,7 @@ client.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err?.response?.status === 401) onUnauthorized?.();
-    const message = err?.response?.data?.message || err.message || 'Network error';
+    const message = err?.response?.data?.message || err.message || 'Lỗi kết nối mạng';
     return Promise.reject(new Error(message));
   }
 );

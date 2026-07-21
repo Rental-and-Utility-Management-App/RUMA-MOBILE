@@ -9,6 +9,7 @@ import { LoadingState, ErrorState } from '../components/States';
 import * as roomsApi from '../api/rooms';
 import { Room } from '../api/types';
 import { formatVND } from '../utils/format';
+import { paymentStatusLabel, roomStatusLabel } from '../utils/i18n';
 import { useAuth } from '../context/AuthContext';
 
 export default function UnitDetailScreen() {
@@ -28,55 +29,55 @@ export default function UnitDetailScreen() {
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
 
   async function onCheckout() {
-    Alert.alert('Checkout room', `Mark ${room?.code} as vacated?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Checkout', style: 'destructive', onPress: async () => {
+    Alert.alert('Trả phòng', `Đánh dấu phòng ${room?.code} đã trả?`, [
+      { text: 'Hủy', style: 'cancel' },
+      { text: 'Trả phòng', style: 'destructive', onPress: async () => {
         setBusy(true);
         try { await roomsApi.checkoutRoom(params.id); await load(); }
-        catch (e: any) { Alert.alert('Failed', e.message); }
+        catch (e: any) { Alert.alert('Thất bại', e.message); }
         finally { setBusy(false); }
       }},
     ]);
   }
 
-  if (loading) return <LoadingState label="Loading unit…" />;
-  if (error || !room) return <ErrorState message={error || 'Not found'} onRetry={load} />;
+  if (loading) return <LoadingState label="Đang tải thông tin phòng…" />;
+  if (error || !room) return <ErrorState message={error || 'Không tìm thấy phòng'} onRetry={load} />;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.bgPage }} contentContainerStyle={{ padding: space[5], gap: space[4] }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={[text.displayM, { color: theme.fg1 }]}>{room.code}{room.name ? ` · ${room.name}` : ''}</Text>
-        <Badge label={room.status} tone={room.status === 'occupied' ? 'brand' : 'neutral'} />
+        <Badge label={roomStatusLabel(room.status)} tone={room.status === 'occupied' ? 'brand' : 'neutral'} />
       </View>
 
       <MobileCard style={{ gap: space[3] }}>
-        <Text style={[text.labelS, { color: theme.fg3 }]}>PRICING</Text>
-        <Row label="Monthly rent" value={formatVND(room.monthly_rent)} />
-        <Row label="Electricity" value={`${formatVND(room.price_electricity)} / kWh`} />
-        <Row label="Water" value={`${formatVND(room.price_water)} / m³`} />
-        <Row label="Management fee" value={`${formatVND(room.management_fee_per_person)} / person`} />
+        <Text style={[text.labelS, { color: theme.fg3 }]}>BẢNG GIÁ</Text>
+        <Row label="Tiền thuê hàng tháng" value={formatVND(room.monthly_rent)} />
+        <Row label="Tiền điện" value={`${formatVND(room.price_electricity)} / kWh`} />
+        <Row label="Tiền nước" value={`${formatVND(room.price_water)} / m³`} />
+        <Row label="Phí quản lý" value={`${formatVND(room.management_fee_per_person)} / người`} />
       </MobileCard>
 
       {room.current_month_payment ? (
         <MobileCard style={{ gap: space[3] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={[text.labelS, { color: theme.fg3 }]}>THIS MONTH</Text>
-            <Badge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
+            <Text style={[text.labelS, { color: theme.fg3 }]}>THÁNG NÀY</Text>
+            <Badge label={paymentStatusLabel(room.current_month_payment.status)} tone={roomPaymentTone(room.current_month_payment.status)} />
           </View>
-          {room.current_month_payment.total_amount ? <Row label="Total" value={formatVND(room.current_month_payment.total_amount)} /> : null}
-          {room.current_month_payment.paid_amount ? <Row label="Paid" value={formatVND(room.current_month_payment.paid_amount)} /> : null}
+          {room.current_month_payment.total_amount ? <Row label="Tổng cộng" value={formatVND(room.current_month_payment.total_amount)} /> : null}
+          {room.current_month_payment.paid_amount ? <Row label="Đã thanh toán" value={formatVND(room.current_month_payment.paid_amount)} /> : null}
         </MobileCard>
       ) : null}
 
       <MobileCard style={{ gap: space[3] }}>
-        <Text style={[text.labelS, { color: theme.fg3 }]}>TENANTS ({room.occupants}/{room.capacity || '∞'})</Text>
+        <Text style={[text.labelS, { color: theme.fg3 }]}>NGƯỜI THUÊ ({room.occupants}/{room.capacity || '∞'})</Text>
         {room.tenants?.length ? room.tenants.map((t) => (
           <Row key={t.id} label={t.full_name} value={t.phone} />
-        )) : <Text style={[text.bodyS, { color: theme.fg3 }]}>No tenants assigned</Text>}
+        )) : <Text style={[text.bodyS, { color: theme.fg3 }]}>Chưa có người thuê</Text>}
       </MobileCard>
 
       {user?.role === 'manager' && room.status === 'occupied' ? (
-        <MobileButton title="Checkout room" variant="danger" onPress={onCheckout} loading={busy} />
+        <MobileButton title="Trả phòng" variant="danger" onPress={onCheckout} loading={busy} />
       ) : null}
     </ScrollView>
   );

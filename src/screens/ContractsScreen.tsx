@@ -6,6 +6,7 @@ import { LoadingState, ErrorState, EmptyState } from '../components/States';
 import * as contractsApi from '../api/contracts';
 import { Contract } from '../api/types';
 import { formatVND, formatDate } from '../utils/format';
+import { contractStatusLabel } from '../utils/i18n';
 
 export default function ContractsScreen() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -21,7 +22,7 @@ export default function ContractsScreen() {
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
   async function onRefresh() { setRefreshing(true); await load(); setRefreshing(false); }
 
-  if (loading) return <LoadingState label="Loading contracts…" />;
+  if (loading) return <LoadingState label="Đang tải hợp đồng…" />;
   if (error) return <ErrorState message={error} onRetry={load} />;
 
   return (
@@ -32,18 +33,18 @@ export default function ContractsScreen() {
       keyExtractor={(c) => c.id}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.brandPrimary} />}
       ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
-      ListEmptyComponent={<EmptyState title="No contracts" />}
+      ListEmptyComponent={<EmptyState title="Chưa có hợp đồng nào" />}
       renderItem={({ item }) => (
         <View style={{ backgroundColor: theme.bgSurface, borderRadius: radius.l, padding: space[4], borderWidth: 1, borderColor: theme.borderSubtle, gap: space[2] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={[text.labelM, { color: theme.fg1 }]}>{item.room_code || item.room_id}</Text>
-            <Badge label={item.status} tone={contractTone(item.status)} />
+            <Badge label={contractStatusLabel(item.status)} tone={contractTone(item.status)} />
           </View>
           <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatDate(item.start_date)} – {formatDate(item.end_date)}</Text>
-          <Text style={[text.bodyS, { color: theme.fg2 }]}>{item.tenants?.map((t) => t.full_name).join(', ') || 'No tenants'}</Text>
+          <Text style={[text.bodyS, { color: theme.fg2 }]}>{item.tenants?.map((t) => t.full_name).join(', ') || 'Chưa có người thuê'}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={[text.bodyS, { color: theme.fg3 }]}>Rent {formatVND(item.monthly_rent)}</Text>
-            <Text style={[text.bodyS, { color: theme.fg3 }]}>Deposit {formatVND(item.deposit_paid)}/{formatVND(item.deposit_amount)}</Text>
+            <Text style={[text.bodyS, { color: theme.fg3 }]}>Tiền thuê {formatVND(item.monthly_rent)}</Text>
+            <Text style={[text.bodyS, { color: theme.fg3 }]}>Cọc {formatVND(item.deposit_paid)}/{formatVND(item.deposit_amount)}</Text>
           </View>
         </View>
       )}

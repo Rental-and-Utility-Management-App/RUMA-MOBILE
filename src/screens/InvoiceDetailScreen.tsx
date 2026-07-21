@@ -9,6 +9,7 @@ import * as invoicesApi from '../api/invoices';
 import * as paymentsApi from '../api/payments';
 import { Invoice, Payment } from '../api/types';
 import { formatVND, formatDate, monthLabel } from '../utils/format';
+import { invoiceStatusLabel, paymentMethodLabel } from '../utils/i18n';
 
 export default function InvoiceDetailScreen() {
   const { params } = useRoute<any>();
@@ -37,40 +38,40 @@ export default function InvoiceDetailScreen() {
 
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
 
-  if (loading) return <LoadingState label="Loading invoice…" />;
-  if (error || !invoice) return <ErrorState message={error || 'Not found'} onRetry={load} />;
+  if (loading) return <LoadingState label="Đang tải hóa đơn…" />;
+  if (error || !invoice) return <ErrorState message={error || 'Không tìm thấy hóa đơn'} onRetry={load} />;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.bgPage }} contentContainerStyle={{ padding: space[5], gap: space[4] }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={[text.displayM, { color: theme.fg1 }]}>{monthLabel(invoice.month, invoice.year)}</Text>
-        <Badge label={invoice.status} tone={invoiceTone(invoice.status)} />
+        <Badge label={invoiceStatusLabel(invoice.status)} tone={invoiceTone(invoice.status)} />
       </View>
 
       <MobileCard style={{ gap: space[3] }}>
-        <Row label="Rent" value={formatVND(invoice.rent_amount)} />
-        <Row label={`Electricity (${invoice.electric_new - invoice.electric_old} kWh)`} value={formatVND(invoice.electric_amount)} />
-        <Row label={`Water (${invoice.water_new - invoice.water_old} m³)`} value={formatVND(invoice.water_amount)} />
-        <Row label={`Management fee (${invoice.occupants}p)`} value={formatVND(invoice.management_fee_amount)} />
-        {invoice.other_fees ? <Row label={invoice.other_note || 'Other fees'} value={formatVND(invoice.other_fees)} /> : null}
+        <Row label="Tiền phòng" value={formatVND(invoice.rent_amount)} />
+        <Row label={`Tiền điện (${invoice.electric_new - invoice.electric_old} kWh)`} value={formatVND(invoice.electric_amount)} />
+        <Row label={`Tiền nước (${invoice.water_new - invoice.water_old} m³)`} value={formatVND(invoice.water_amount)} />
+        <Row label={`Phí quản lý (${invoice.occupants} người)`} value={formatVND(invoice.management_fee_amount)} />
+        {invoice.other_fees ? <Row label={invoice.other_note || 'Phí khác'} value={formatVND(invoice.other_fees)} /> : null}
         <View style={{ height: 1, backgroundColor: theme.borderSubtle }} />
-        <Row label="Total" value={formatVND(invoice.total_amount)} bold />
-        <Row label="Paid" value={formatVND(invoice.paid_amount)} />
-        <Row label="Due date" value={formatDate(invoice.due_date)} />
+        <Row label="Tổng cộng" value={formatVND(invoice.total_amount)} bold />
+        <Row label="Đã thanh toán" value={formatVND(invoice.paid_amount)} />
+        <Row label="Hạn thanh toán" value={formatDate(invoice.due_date)} />
       </MobileCard>
 
       {invoice.status !== 'paid' && invoice.status !== 'cancelled' && qr ? (
         <MobileCard style={{ alignItems: 'center', gap: space[3] }}>
-          <Text style={[text.labelS, { color: theme.fg3 }]}>SCAN TO PAY</Text>
+          <Text style={[text.labelS, { color: theme.fg3 }]}>QUÉT MÃ ĐỂ THANH TOÁN</Text>
           <Image source={{ uri: qr }} style={{ width: 200, height: 200, borderRadius: 8 }} resizeMode="contain" />
         </MobileCard>
       ) : null}
 
       <MobileCard style={{ gap: space[3] }}>
-        <Text style={[text.labelS, { color: theme.fg3 }]}>PAYMENT HISTORY</Text>
+        <Text style={[text.labelS, { color: theme.fg3 }]}>LỊCH SỬ THANH TOÁN</Text>
         {payments.length ? payments.map((p) => (
-          <Row key={p.id} label={`${formatDate(p.paid_at)} · ${p.method.replace('_', ' ')}`} value={formatVND(p.amount)} />
-        )) : <Text style={[text.bodyS, { color: theme.fg3 }]}>No payments recorded</Text>}
+          <Row key={p.id} label={`${formatDate(p.paid_at)} · ${paymentMethodLabel(p.method)}`} value={formatVND(p.amount)} />
+        )) : <Text style={[text.bodyS, { color: theme.fg3 }]}>Chưa có thanh toán nào</Text>}
       </MobileCard>
     </ScrollView>
   );

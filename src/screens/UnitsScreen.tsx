@@ -7,6 +7,7 @@ import { LoadingState, ErrorState, EmptyState } from '../components/States';
 import * as roomsApi from '../api/rooms';
 import { Room } from '../api/types';
 import { formatVND } from '../utils/format';
+import { paymentStatusLabel, roomStatusLabel } from '../utils/i18n';
 
 export default function UnitsScreen() {
   const navigation = useNavigation<any>();
@@ -23,7 +24,7 @@ export default function UnitsScreen() {
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
   async function onRefresh() { setRefreshing(true); await load(); setRefreshing(false); }
 
-  if (loading) return <LoadingState label="Loading units…" />;
+  if (loading) return <LoadingState label="Đang tải danh sách phòng…" />;
   if (error) return <ErrorState message={error} onRetry={load} />;
 
   return (
@@ -34,7 +35,7 @@ export default function UnitsScreen() {
       keyExtractor={(r) => r.id}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.brandPrimary} />}
       ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
-      ListEmptyComponent={<EmptyState title="No units yet" />}
+      ListEmptyComponent={<EmptyState title="Chưa có phòng nào" />}
       renderItem={({ item }) => (
         <Pressable
           onPress={() => navigation.navigate('UnitDetail', { id: item.id })}
@@ -45,10 +46,10 @@ export default function UnitsScreen() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={{ gap: 2 }}>
               <Text style={[text.labelM, { color: theme.fg1 }]}>{item.code}{item.name ? ` · ${item.name}` : ''}</Text>
-              <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.monthly_rent)} / month · {item.occupants}/{item.capacity || '∞'} occupants</Text>
+              <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.monthly_rent)} / tháng · {item.occupants}/{item.capacity || '∞'} người ở</Text>
             </View>
             <Badge
-              label={item.current_month_payment ? item.current_month_payment.status.replace('_', ' ') : item.status}
+              label={item.current_month_payment ? paymentStatusLabel(item.current_month_payment.status) : roomStatusLabel(item.status)}
               tone={item.current_month_payment ? roomPaymentTone(item.current_month_payment.status) : item.status === 'occupied' ? 'brand' : 'neutral'}
             />
           </View>

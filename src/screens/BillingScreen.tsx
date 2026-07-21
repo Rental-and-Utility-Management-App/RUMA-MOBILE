@@ -7,8 +7,12 @@ import { LoadingState, ErrorState, EmptyState } from '../components/States';
 import * as invoicesApi from '../api/invoices';
 import { Invoice } from '../api/types';
 import { formatVND, monthLabel } from '../utils/format';
+import { invoiceStatusLabel } from '../utils/i18n';
 
 const FILTERS = ['all', 'unpaid', 'partial', 'paid'] as const;
+const FILTER_LABELS: Record<typeof FILTERS[number], string> = {
+  all: 'Tất cả', unpaid: 'Chưa TT', partial: 'Một phần', paid: 'Đã TT',
+};
 
 export default function BillingScreen() {
   const navigation = useNavigation<any>();
@@ -36,18 +40,18 @@ export default function BillingScreen() {
             backgroundColor: filter === f ? theme.brandPrimary : theme.bgSurface,
             borderWidth: 1, borderColor: filter === f ? theme.brandPrimary : theme.borderDefault,
           }}>
-            <Text style={[text.labelS, { color: filter === f ? theme.fgOnDark : theme.fg2, textTransform: 'capitalize' }]}>{f}</Text>
+            <Text style={[text.labelS, { color: filter === f ? theme.fgOnDark : theme.fg2 }]}>{FILTER_LABELS[f]}</Text>
           </Pressable>
         ))}
       </View>
-      {loading ? <LoadingState label="Loading invoices…" /> : error ? <ErrorState message={error} onRetry={load} /> : (
+      {loading ? <LoadingState label="Đang tải hóa đơn…" /> : error ? <ErrorState message={error} onRetry={load} /> : (
         <FlatList
           contentContainerStyle={{ padding: space[5], gap: space[3] }}
           data={invoices}
           keyExtractor={(i) => i.id}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.brandPrimary} />}
           ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
-          ListEmptyComponent={<EmptyState title="No invoices" />}
+          ListEmptyComponent={<EmptyState title="Chưa có hóa đơn nào" />}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => navigation.navigate('InvoiceDetail', { id: item.id })}
@@ -58,9 +62,9 @@ export default function BillingScreen() {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ gap: 2 }}>
                   <Text style={[text.labelM, { color: theme.fg1 }]}>{monthLabel(item.month, item.year)}</Text>
-                  <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.total_amount)}{item.overdue ? ' · overdue' : ''}</Text>
+                  <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.total_amount)}{item.overdue ? ' · quá hạn' : ''}</Text>
                 </View>
-                <Badge label={item.status} tone={invoiceTone(item.status)} />
+                <Badge label={invoiceStatusLabel(item.status)} tone={invoiceTone(item.status)} />
               </View>
             </Pressable>
           )}
