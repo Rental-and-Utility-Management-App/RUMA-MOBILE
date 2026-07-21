@@ -18,7 +18,7 @@ export default function UnitsScreen() {
 
   const load = useCallback(async () => {
     setError(null);
-    try { setRooms(await roomsApi.listRooms()); } catch (e: any) { setError(e.message); }
+    try { setRooms((await roomsApi.listRooms()) || []); } catch (e: any) { setError(e.message); }
   }, []);
 
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
@@ -48,10 +48,12 @@ export default function UnitsScreen() {
               <Text style={[text.labelM, { color: theme.fg1 }]}>{item.code}{item.name ? ` · ${item.name}` : ''}</Text>
               <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.monthly_rent)} / tháng · {item.occupants}/{item.capacity || '∞'} người ở</Text>
             </View>
-            <Badge
-              label={item.current_month_payment ? paymentStatusLabel(item.current_month_payment.status) : roomStatusLabel(item.status)}
-              tone={item.current_month_payment ? roomPaymentTone(item.current_month_payment.status) : item.status === 'occupied' ? 'brand' : 'neutral'}
-            />
+            <View style={{ gap: space[2], alignItems: 'flex-end' }}>
+              <Badge label={roomStatusLabel(item.status)} tone={item.status === 'occupied' ? 'brand' : 'neutral'} />
+              {item.current_month_payment ? (
+                <Badge label={paymentStatusLabel(item.current_month_payment.status)} tone={roomPaymentTone(item.current_month_payment.status)} />
+              ) : null}
+            </View>
           </View>
         </Pressable>
       )}

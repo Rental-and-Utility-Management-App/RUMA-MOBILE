@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { View, Text, FlatList, Pressable, RefreshControl } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { theme, text, space, radius } from '../theme/tokens';
 import { MobileBadge as Badge, contractTone } from '../components/MobileBadge';
 import { LoadingState, ErrorState, EmptyState } from '../components/States';
@@ -9,6 +10,7 @@ import { formatVND, formatDate } from '../utils/format';
 import { contractStatusLabel } from '../utils/i18n';
 
 export default function ContractsScreen() {
+  const navigation = useNavigation<any>();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,7 @@ export default function ContractsScreen() {
 
   const load = useCallback(async () => {
     setError(null);
-    try { setContracts(await contractsApi.listContracts()); } catch (e: any) { setError(e.message); }
+    try { setContracts((await contractsApi.listContracts()) || []); } catch (e: any) { setError(e.message); }
   }, []);
 
   useEffect(() => { load().finally(() => setLoading(false)); }, [load]);
@@ -35,9 +37,14 @@ export default function ContractsScreen() {
       ItemSeparatorComponent={() => <View style={{ height: space[3] }} />}
       ListEmptyComponent={<EmptyState title="Chưa có hợp đồng nào" />}
       renderItem={({ item }) => (
-        <View style={{ backgroundColor: theme.bgSurface, borderRadius: radius.l, padding: space[4], borderWidth: 1, borderColor: theme.borderSubtle, gap: space[2] }}>
+        <Pressable
+          onPress={() => navigation.navigate('ContractDetail', { id: item.id })}
+          style={({ pressed }) => ({
+            backgroundColor: theme.bgSurface, borderRadius: radius.l, padding: space[4], borderWidth: 1, borderColor: theme.borderSubtle, gap: space[2], opacity: pressed ? 0.85 : 1,
+          })}
+        >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={[text.labelM, { color: theme.fg1 }]}>{item.room_code || item.room_id}</Text>
+            <Text style={[text.labelM, { color: theme.fg1 }]}>Phòng {item.room_code || item.room_id}</Text>
             <Badge label={contractStatusLabel(item.status)} tone={contractTone(item.status)} />
           </View>
           <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatDate(item.start_date)} – {formatDate(item.end_date)}</Text>
@@ -46,7 +53,7 @@ export default function ContractsScreen() {
             <Text style={[text.bodyS, { color: theme.fg3 }]}>Tiền thuê {formatVND(item.monthly_rent)}</Text>
             <Text style={[text.bodyS, { color: theme.fg3 }]}>Cọc {formatVND(item.deposit_paid)}/{formatVND(item.deposit_amount)}</Text>
           </View>
-        </View>
+        </Pressable>
       )}
     />
   );

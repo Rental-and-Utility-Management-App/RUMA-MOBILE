@@ -44,3 +44,15 @@ export function paymentMethodLabel(method?: string): string {
   const map: Record<string, string> = { cash: 'Tiền mặt', bank_transfer: 'Chuyển khoản', other: 'Khác' };
   return map[method || ''] || method || '';
 }
+
+export function depositStatusLabel(status?: string): string {
+  const map: Record<string, string> = {
+    unpaid: 'Chưa đóng cọc',
+    partial: 'Đóng cọc một phần',
+    held: 'Đang giữ cọc',
+    partial_refunded: 'Đã hoàn một phần cọc',
+    refunded: 'Đã hoàn cọc',
+    forfeited: 'Mất cọc',
+  };
+  return map[status || ''] || status || '';
+}

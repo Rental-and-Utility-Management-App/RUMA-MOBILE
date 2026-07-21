@@ -24,7 +24,7 @@ export default function BillingScreen() {
 
   const load = useCallback(async () => {
     setError(null);
-    try { setInvoices(await invoicesApi.listInvoices(filter === 'all' ? undefined : { status: filter })); }
+    try { setInvoices((await invoicesApi.listInvoices(filter === 'all' ? undefined : { status: filter })) || []); }
     catch (e: any) { setError(e.message); }
   }, [filter]);
 

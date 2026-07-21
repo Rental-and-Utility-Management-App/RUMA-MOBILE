@@ -5,6 +5,7 @@ import { theme, text, space } from '../theme/tokens';
 import { MobileCard } from '../components/MobileCard';
 import { MobileBadge as Badge, roomPaymentTone } from '../components/MobileBadge';
 import { MobileButton } from '../components/MobileButton';
+import { Avatar } from '../components/Avatar';
 import { LoadingState, ErrorState } from '../components/States';
 import * as roomsApi from '../api/rooms';
 import { Room } from '../api/types';
@@ -69,10 +70,16 @@ export default function UnitDetailScreen() {
         </MobileCard>
       ) : null}
 
-      <MobileCard style={{ gap: space[3] }}>
+      <MobileCard style={{ gap: space[4] }}>
         <Text style={[text.labelS, { color: theme.fg3 }]}>NGƯỜI THUÊ ({room.occupants}/{room.capacity || '∞'})</Text>
         {room.tenants?.length ? room.tenants.map((t) => (
-          <Row key={t.id} label={t.full_name} value={t.phone} />
+          <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', gap: space[3] }}>
+            <Avatar uri={t.avatar_url} name={t.full_name} size={44} />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={[text.labelM, { color: theme.fg1 }]}>{t.full_name}</Text>
+              <Text style={[text.bodyS, { color: theme.fg2 }]}>{t.phone}</Text>
+            </View>
+          </View>
         )) : <Text style={[text.bodyS, { color: theme.fg3 }]}>Chưa có người thuê</Text>}
       </MobileCard>
 

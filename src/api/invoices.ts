@@ -10,7 +10,7 @@ export function getInvoice(id: string) {
 }
 
 export function getInvoiceQRCode(id: string) {
-  return unwrap<{ qr_data_url?: string; qr_url?: string; content?: string }>(
+  return unwrap<{ qr_code_url: string }>(
     client.get(`/invoices/${id}/qr-code`)
   );
 }
