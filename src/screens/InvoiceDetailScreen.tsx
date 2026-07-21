@@ -44,7 +44,7 @@ export default function InvoiceDetailScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: theme.bgPage }} contentContainerStyle={{ padding: space[5], gap: space[4] }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={[text.displayM, { color: theme.fg1 }]}>{monthLabel(invoice.month, invoice.year)}</Text>
-        <MobileBadge label={invoice.status} tone={invoiceTone(invoice.status)} />
+        <Badge label={invoice.status} tone={invoiceTone(invoice.status)} />
       </View>
 
       <MobileCard style={{ gap: space[3] }}>
