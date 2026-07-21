@@ -60,7 +60,7 @@ export default function BillingScreen() {
                   <Text style={[text.labelM, { color: theme.fg1 }]}>{monthLabel(item.month, item.year)}</Text>
                   <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatVND(item.total_amount)}{item.overdue ? ' · overdue' : ''}</Text>
                 </View>
-                <MobileBadge label={item.status} tone={invoiceTone(item.status)} />
+                <Badge label={item.status} tone={invoiceTone(item.status)} />
               </View>
             </Pressable>
           )}

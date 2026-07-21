@@ -46,7 +46,7 @@ export default function UnitDetailScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: theme.bgPage }} contentContainerStyle={{ padding: space[5], gap: space[4] }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={[text.displayM, { color: theme.fg1 }]}>{room.code}{room.name ? ` · ${room.name}` : ''}</Text>
-        <MobileBadge label={room.status} tone={room.status === 'occupied' ? 'brand' : 'neutral'} />
+        <Badge label={room.status} tone={room.status === 'occupied' ? 'brand' : 'neutral'} />
       </View>
 
       <MobileCard style={{ gap: space[3] }}>
@@ -61,7 +61,7 @@ export default function UnitDetailScreen() {
         <MobileCard style={{ gap: space[3] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={[text.labelS, { color: theme.fg3 }]}>THIS MONTH</Text>
-            <MobileBadge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
+            <Badge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
           </View>
           {room.current_month_payment.total_amount ? <Row label="Total" value={formatVND(room.current_month_payment.total_amount)} /> : null}
           {room.current_month_payment.paid_amount ? <Row label="Paid" value={formatVND(room.current_month_payment.paid_amount)} /> : null}

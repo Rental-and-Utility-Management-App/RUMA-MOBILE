@@ -37,7 +37,7 @@ export default function ContractsScreen() {
         <View style={{ backgroundColor: theme.bgSurface, borderRadius: radius.l, padding: space[4], borderWidth: 1, borderColor: theme.borderSubtle, gap: space[2] }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={[text.labelM, { color: theme.fg1 }]}>{item.room_code || item.room_id}</Text>
-            <MobileBadge label={item.status} tone={contractTone(item.status)} />
+            <Badge label={item.status} tone={contractTone(item.status)} />
           </View>
           <Text style={[text.bodyS, { color: theme.fg2 }]}>{formatDate(item.start_date)} – {formatDate(item.end_date)}</Text>
           <Text style={[text.bodyS, { color: theme.fg2 }]}>{item.tenants?.map((t) => t.full_name).join(', ') || 'No tenants'}</Text>

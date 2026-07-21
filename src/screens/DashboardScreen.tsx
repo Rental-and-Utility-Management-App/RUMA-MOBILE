@@ -60,7 +60,7 @@ export default function DashboardScreen() {
               <Text style={[text.displayS, { color: theme.fg1 }]}>{room.code}{room.name ? ` · ${room.name}` : ''}</Text>
             </View>
             {room.current_month_payment ? (
-              <MobileBadge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
+              <Badge label={room.current_month_payment.status.replace('_', ' ')} tone={roomPaymentTone(room.current_month_payment.status)} />
             ) : null}
           </View>
           <Row label="Monthly rent" value={formatVND(room.monthly_rent)} />
